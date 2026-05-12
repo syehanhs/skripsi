@@ -1,0 +1,11 @@
+streamlit
+opencv-python-headless==4.7.0.72
+cvzone==1.6.1
+mediapipe==0.10.21
+google-genai
+streamlit-webrtc
+Pillow
+av
+numpy==1.26.4
+pyarrow
+tornado
