@@ -48,9 +48,15 @@ API_KEY_AMAN = st.secrets["GEMINI_API_KEY"]
 client = genai.Client(api_key=API_KEY_AMAN)
 model = "gemini-2.5-flash-lite"
 
-RTC_CONFIGURATION = RTCConfiguration(
-    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-)
+RTC_CONFIGURATION = RTCConfiguration({
+    "iceServers": [
+        {"urls": ["stun:stun.l.google.com:19302"]},
+        {"urls": ["stun:stun1.l.google.com:19302"]},
+        {"urls": ["stun:stun2.l.google.com:19302"]},
+        {"urls": ["stun:stun3.l.google.com:19302"]},
+        {"urls": ["stun:stun4.l.google.com:19302"]},
+    ]
+})
 
 
 # --- 4. CLASS PEMROSESAN VIDEO (WEBRTC) ---
@@ -97,66 +103,6 @@ class HandDetectorProcessor(VideoProcessorBase):
                 print("ERROR GEMINI:", str(e))
                 return f"[Error Gemini] {str(e)}"
         return ""
-
-    # def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-    #     img = frame.to_ndarray(format="bgr24")
-    #     img = cv2.flip(img, 1)
-    #
-    #     if self.canvas is None or self.canvas.shape != img.shape:
-    #         self.canvas = np.zeros_like(img)
-    #
-    #     # Memanggil logika modular Anda
-    #     info = self.getHandInfo(img)
-    #
-    #     if info:
-    #         fingers, lmList = info
-    #
-    #         # --- LOGIKA MENGGAMBAR (Membaca koordinat Y agar mulus dan tidak putus) ---
-    #         # lmList[8][1] = Kordinat Y ujung telunjuk | lmList[6][1] = Kordinat Y pangkal telunjuk
-    #         index_is_up = lmList[8][1] < lmList[6][1]
-    #         middle_is_down = lmList[12][1] > lmList[10][1]
-    #
-    #         if index_is_up and middle_is_down:
-    #             current_pos = lmList[8][0:2]
-    #             if self.prev_pos is None:
-    #                 self.prev_pos = current_pos
-    #
-    #             # Menggambar garis tebal dan halus (LINE_AA)
-    #             cv2.line(self.canvas, current_pos, self.prev_pos, (255, 0, 255), 10, cv2.LINE_AA)
-    #             self.prev_pos = current_pos
-    #
-    #         # --- LOGIKA MENGHAPUS ---
-    #         elif fingers == [0, 1, 1, 1, 0]:
-    #             self.canvas = np.zeros_like(img)
-    #             self.prev_pos = None
-    #             self.ai_response = "Canvas dibersihkan. Silakan menggambar lagi."
-    #
-    #         else:
-    #             self.prev_pos = None
-    #
-    #         # --- LOGIKA MENGIRIM KE AI ---
-    #         if fingers == [1, 0, 0, 0, 1]:
-    #             if not self.gesture_active:
-    #                 self.gesture_start_time = time.time()
-    #                 self.gesture_active = True
-    #                 self.has_sent = False
-    #
-    #             time_held = time.time() - self.gesture_start_time
-    #             cv2.putText(img, f"Tahan... {int(time_held)}s/2s", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
-    #                         2)
-    #
-    #             if time_held > self.HOLD_DURATION and not self.has_sent:
-    #                 cv2.putText(img, "MENGIRIM KE AI...", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    #                 self.ai_response = self.sendToAI(self.canvas, fingers)
-    #                 self.has_sent = True
-    #         else:
-    #             self.gesture_active = False
-    #             self.gesture_start_time = 0
-    #             self.has_sent = False
-    #
-    #     # Menggabungkan canvas gambar dengan frame kamera (opacity tinta 0.9)
-    #     image_combined = cv2.addWeighted(img, 1.0, self.canvas, 0.9, 0)
-    #     return av.VideoFrame.from_ndarray(image_combined, format="bgr24")
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
         img = frame.to_ndarray(format="bgr24")
